@@ -13,6 +13,7 @@ function gulpspsave(options) {
 	}
 
 	return through.obj(function (file, enc, cb) {
+		console.log('foobar');
 		if (file.isNull()) {
 			cb(null, file);
 			return;
