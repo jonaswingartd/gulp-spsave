@@ -1,11 +1,12 @@
 var spsave = require('spsave'),
-    gutil = require('gulp-util'),
-    PluginError = gutil.PluginError,
-    path = require("path"),
+	gutil = require('gulp-util'),
+	PluginError = gutil.PluginError,
+	path = require("path"),
 	through = require("through2"),
 	extend = require('util')._extend;
 
 var PLUGIN_NAME = 'gulp-spsave';
+var indexer = 0;
 
 function gulpspsave(options) {
 	if (!options) {
@@ -13,9 +14,10 @@ function gulpspsave(options) {
 	}
 
 	return through.obj(function (file, enc, cb) {
-		console.log('baz and foobar');
+		var self = this;
+
 		if (file.isNull()) {
-			cb(null, file);
+			cb();
 			return;
 		}
 
@@ -37,16 +39,21 @@ function gulpspsave(options) {
 				newOptions.folder = destFolder;
 			}
 			newOptions.fileContent = file.contents;
-			var self = this;
+			// var self = this;
+			// console.log(indexer++ + ' ' + file.path);
 			spsave(newOptions, function (err, data) {
 				if (err) {
 					console.log(err);
 					cb(new gutil.PluginError(PLUGIN_NAME, err.message));
 					return;
 				}
-				cb(null, file);
+				self.push(file);
+				cb();
 			});
 		}
+	},
+	function(cb) {
+		cb();
 	});
 }
 
